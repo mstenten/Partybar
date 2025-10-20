@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>🎉 Danke für deine Bestellung!</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a 0%, #0b0b0b 100%);
+      color: #fff;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #ff007f;
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+
+    p {
+      color: #ddd;
+      font-size: 1.1em;
+      margin-bottom: 30px;
+    }
+
+    a {
+      background: #ff007f;
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      background: #ff3399;
+    }
+
+    .emoji {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+<div>
+  <div class="emoji">🍹</div>
+  <h1>Danke für deine Bestellung!</h1>
+  <p>Deine Bestellung wurde erfolgreich abgeschickt.
+    Der Barkeeper kümmert sich jetzt um dein Getränk 🍸</p>
+  <a href="/drinks">Zurück zur Getränkekarte</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Getränk hinzufügen</title>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #111;
+        color: #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    h1 {
+        margin-top: 30px;
+        color: #ff007f;
+    }
+
+    form {
+        background: rgba(255,255,255,0.05);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #ff66b2;
+    }
+
+    input, textarea, select {
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        outline: none;
+        background-color: #222;
+        color: #fff;
+    }
+
+    button {
+        background: #ff007f;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #ff3399;
+    }
+
+    .preview {
+        width: 100%;
+        height: 200px;
+        border: 1px dashed #ff007f;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    a {
+        color: #ff66b2;
+        text-decoration: none;
+        margin-top: 20px;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<h1>🍸 Neues Getränk hinzufügen</h1>
+
+<form th:action="@{/admin/add-drink}" method="post" enctype="multipart/form-data">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="category">Kategorie:</label>
+  <select id="category" name="category">
+    <option value="Cocktails">Cocktails</option>
+    <option value="Longdrinks">Longdrinks</option>
+    <option value="Sekt">Sekt</option>
+    <option value="Weine">Weine</option>
+    <option value="Biere">Biere</option>
+    <option value="Spirituosen">Spirituosen</option>
+    <option value="Alkoholfrei">Alkoholfrei</option>
+  </select>
+
+  <label for="imageFile">Bild auswählen:</label>
+  <input type="file" id="imageFile" name="imageFile" accept="image/*" onchange="previewImage(event)">
+
+  <img id="imagePreview" class="preview" src="#" alt="Vorschau" style="display:none;">
+
+  <label for="ingredientsList">Zutaten (kommagetrennt):</label>
+  <input type="text" id="ingredientsList" name="ingredientsList" placeholder="Rum, Minze, Limette">
+
+  <label for="preparation">Zubereitung:</label>
+  <textarea id="preparation" name="preparation" rows="4" placeholder="Wie wird es gemacht?"></textarea>
+
+  <button type="submit">💾 Speichern</button>
+</form>
+
+<a th:href="@{/drinks}">← Zurück zur Übersicht</a>
+
+<script>
+  function previewImage(event) {
+      const [file] = event.target.files;
+      const preview = document.getElementById("imagePreview");
+      if (file) {
+          preview.src = URL.createObjectURL(file);
+          preview.style.display = "block";
+      } else {
+          preview.style.display = "none";
+      }
+  }
+</script>
+
+<script src="/js/admin-notifications.js"></script>
+</body>
+</html>

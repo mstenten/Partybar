@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>🧉 Mein Tablett</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a 0%, #0b0b0b 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    h1 { margin:40px 0 10px;color:#ff007f;text-shadow:0 0 15px rgba(255,0,127,0.4);}
+    .drink-list {
+      width:90%;max-width:800px;background:rgba(255,255,255,0.05);
+      border-radius:20px;box-shadow:0 0 20px rgba(255,0,127,0.3);
+      padding:20px;margin-top:30px;
+    }
+    .drink-item {
+      display:flex;justify-content:space-between;align-items:center;
+      border-bottom:1px solid rgba(255,255,255,0.1);padding:15px 0;gap:20px;
+    }
+    .drink-image {
+      width:100px;height:100px;border-radius:10px;object-fit:cover;
+      box-shadow:0 0 10px rgba(255,0,127,0.3);
+    }
+    .drink-info {flex-grow:1;text-align:left;}
+    .drink-info h3 {margin:0;color:#ff66b2;}
+    .btn {
+      background:#ff007f;border:none;border-radius:8px;color:white;
+      padding:8px 14px;font-weight:bold;cursor:pointer;
+      text-decoration:none;transition:0.3s;
+    }
+    .btn:hover {background:#ff3399;}
+    form {margin-top:20px;}
+    a.back {
+      margin-top:30px;color:#ff66b2;text-decoration:none;font-weight:bold;
+    }
+    a.back:hover {text-decoration:underline;}
+  </style>
+</head>
+<body>
+
+<h1>🧉 Mein Tablett</h1>
+
+<div class="drink-list" th:if="${#lists.isEmpty(drinks)}">
+  <p>Dein Tablett ist leer – such dir was Leckeres aus! 🍸</p>
+  <a href="/drinks" class="btn">Zurück zur Getränkekarte</a>
+</div>
+
+<div class="drink-list" th:if="${!#lists.isEmpty(drinks)}">
+  <div th:each="drink : ${drinks}" class="drink-item">
+    <img th:src="${drink.imagePath}" alt="Drink Bild" class="drink-image">
+    <div class="drink-info">
+      <h3 th:text="${drink.name}">Drinkname</h3>
+      <p>
+        <strong>Zutaten:</strong>
+        <span th:each="ingredient, iterStat : ${drink.ingredients}">
+          <span th:text="${ingredient.name}"></span><span th:if="${!iterStat.last}">, </span>
+        </span>
+      </p>
+    </div>
+    <a th:href="@{'/orders/remove/' + ${drink.id}}" class="btn">Entfernen</a>
+  </div>
+
+  <form th:action="@{/orders/submit}" method="post">
+    <button type="submit" class="btn">🍹 Bestellung abschicken</button>
+  </form>
+</div>
+
+<a href="/drinks" class="back">← Zurück zur Getränkekarte</a>
+
+</body>
+</html>

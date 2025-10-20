@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Fehler – Partybar</title>
+  <style>
+    body {
+        background: radial-gradient(circle at center, #1b1b1b, #0d0d0d);
+        color: #f1f1f1;
+        font-family: 'Poppins', sans-serif;
+        text-align: center;
+        padding-top: 100px;
+    }
+    h1 {
+        font-size: 2.5em;
+        color: #ff6b6b;
+        margin-bottom: 10px;
+    }
+    p {
+        color: #ccc;
+    }
+    a {
+        color: #ffd166;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    a:hover {
+        color: #ffb703;
+    }
+    .error-box {
+        background: rgba(255,255,255,0.05);
+        border-radius: 15px;
+        padding: 30px;
+        display: inline-block;
+        box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+<div class="error-box">
+  <h1>❌ Uuups!</h1>
+  <p th:text="${errorMessage != null ? errorMessage : 'Etwas ist schiefgelaufen.'}"></p>
+  <p><a href="/drinks">Zurück zur Übersicht</a></p>
+</div>
+</body>
+</html>

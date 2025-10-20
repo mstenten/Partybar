@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Partybar 🍸</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <style>
+    /* === Allgemein === */
+    body {
+        margin: 0;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top left, #1a1a1a 0%, #0b0b0b 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #f5f5f5;
+    }
+
+    /* === Header === */
+    header {
+        background: linear-gradient(90deg, #000000, #111111, #000000);
+        color: #f5f5f5;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 15px rgba(255, 215, 0, 0.15);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+        position: relative;
+        z-index: 10;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    nav {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    nav a {
+        color: #f5f5f5;
+        text-decoration: none;
+        margin-left: 1.5rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    nav a:hover {
+        color: #ffd700;
+    }
+
+    /* === Badge für Bestellungen === */
+    .order-badge {
+        position: absolute;
+        top: -6px;
+        right: -12px;
+        background: #ff4d4d;
+        color: white;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 50%;
+        display: none;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 5px rgba(255, 77, 77, 0.4); }
+      50% { box-shadow: 0 0 15px rgba(255, 77, 77, 0.8); }
+    }
+
+    /* === Hauptbereich === */
+    main {
+        flex: 1;
+        padding: 3rem 2rem;
+        background: linear-gradient(160deg, #0f0f0f 0%, #1a1a1a 60%, #0f0f0f 100%);
+    }
+
+    .welcome {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .welcome h2 {
+        font-size: 2rem;
+        color: #ffd700;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+
+    /* === Kartenübersicht === */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 2rem;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 215, 0, 0.15);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+    }
+
+    .card h3 {
+        color: #ffd700;
+        margin-bottom: 0.5rem;
+    }
+
+    .card p {
+        color: #ccc;
+        font-size: 0.95rem;
+    }
+
+    .card a {
+        display: inline-block;
+        margin-top: 1rem;
+        background: #ffd700;
+        color: #111;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+
+    .card a:hover {
+        background: #ffea85;
+    }
+
+    /* === Footer === */
+    footer {
+        text-align: center;
+        background: #000;
+        color: #999;
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 215, 0, 0.15);
+        font-size: 0.9rem;
+    }
+
+    /* === Admin Badge === */
+    .admin-badge {
+        background: #ff4d4d;
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🍸 Partybar</h1>
+  <nav>
+    <a href="/home">Startseite</a>
+    <a href="/drinks">Getränke</a>
+
+    <!-- Nur Admin sieht diese -->
+    <span th:if="${isAdmin}">
+      <a href="/admin/add-drink">Getränk hinzufügen</a>
+      <a href="/admin/orders" id="orders-link">Bestellungen
+        <span id="order-badge" class="order-badge">0</span>
+      </a>
+    </span>
+
+    <a href="/logout">Logout</a>
+  </nav>
+</header>
+
+<main>
+  <div class="welcome">
+    <h2>Willkommen, <span th:text="${username}">Gast</span>!</h2>
+
+    <p th:if="${isAdmin}">
+      Du bist als <strong>Administrator</strong> eingeloggt
+      <span class="admin-badge">Admin</span>.
+    </p>
+
+    <p th:unless="${isAdmin}">
+      Du bist als <strong>Gast</strong> eingeloggt – bestell dir was Leckeres 🍹
+    </p>
+  </div>
+
+  <section class="cards">
+    <div class="card">
+      <h3>Sekt & Weine</h3>
+      <p>Elegante Getränke für feierliche Momente.</p>
+      <a href="/drinks?category=Weine">Ansehen →</a>
+    </div>
+
+    <div class="card">
+      <h3>Biere</h3>
+      <p>Von klassisch bis craft – alles dabei 🍺</p>
+      <a href="/drinks?category=Biere">Ansehen →</a>
+    </div>
+
+    <div class="card">
+      <h3>Cocktails</h3>
+      <p>Beliebte Klassiker & kreative Mischungen 🍸</p>
+      <a href="/drinks?category=Cocktails">Ansehen →</a>
+    </div>
+
+    <div class="card">
+      <h3>Longdrinks</h3>
+      <p>Erfrischende Kombinationen für jede Stimmung.</p>
+      <a href="/drinks?category=Longdrinks">Ansehen →</a>
+    </div>
+
+    <div class="card">
+      <h3>Spirituosen</h3>
+      <p>Pur oder gemixt – stark im Geschmack 🥃</p>
+      <a href="/drinks?category=Spirituosen">Ansehen →</a>
+    </div>
+
+    <div class="card">
+      <h3>Alkoholfrei</h3>
+      <p>Genuss ohne Promille – aber mit Geschmack 🍹</p>
+      <a href="/drinks?category=Alkoholfrei">Ansehen →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  &copy; 2025 Partybar – entwickelt mit ❤️ und 🍸
+</footer>
+
+<script>
+  // 🔔 Holt die Anzahl offener Bestellungen
+  async function updateOrderBadge() {
+    const badge = document.getElementById('order-badge');
+    if (!badge) return;
+
+    try {
+      const res = await fetch('/admin/orders/count', { credentials: 'same-origin' });
+      if (!res.ok) throw new Error('Response not OK');
+      const count = parseInt(await res.text());
+      if (!isNaN(count) && count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      console.warn('Bestellungs-Badge konnte nicht aktualisiert werden.', e);
+    }
+  }
+
+  // Initial + alle 15 Sekunden
+  updateOrderBadge();
+  setInterval(updateOrderBadge, 15000);
+</script>
+</body>
+</html>

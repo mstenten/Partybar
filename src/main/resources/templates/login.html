@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – PartyBar</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen flex items-center justify-center text-white">
+
+<div class="bg-gray-900 bg-opacity-80 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-96 border border-gray-700">
+    <h1 class="text-3xl font-semibold mb-6 text-center text-pink-400">PartyBar Login</h1>
+
+    <div th:if="${param.logout}" class="bg-green-800 text-green-100 px-4 py-2 rounded mb-4 text-sm text-center">
+        Du wurdest erfolgreich ausgeloggt.
+    </div>
+
+    <div th:if="${param.error}" class="bg-red-800 text-red-100 px-4 py-2 rounded mb-4 text-sm text-center">
+        Benutzername oder Passwort falsch.
+    </div>
+
+    <form th:action="@{/login}" method="post" class="flex flex-col gap-4">
+        <input type="text" name="username" placeholder="Benutzername"
+               class="p-3 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"/>
+
+        <input type="password" name="password" placeholder="Passwort"
+               class="p-3 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"/>
+
+        <button type="submit"
+                class="bg-pink-600 hover:bg-pink-700 transition-colors text-white font-semibold py-2 rounded-lg">
+            Einloggen
+        </button>
+    </form>
+
+    <p class="text-center text-gray-400 text-sm mt-6">
+        Noch kein Konto? <a href="/register" class="text-pink-400 hover:text-pink-300">Registrieren</a>
+    </p>
+</div>
+
+</body>
+</html>

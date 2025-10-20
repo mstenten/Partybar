@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>🍸 Bestellungen Übersicht (Admin)</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a 0%, #0b0b0b 100%);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin: 30px 0 10px 0;
+      color: #ff007f;
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 🔔 Badge */
+    #order-count {
+      background: #ff007f;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+    }
+
+    .orders-container {
+      width: 90%;
+      max-width: 900px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255,0,127,0.2);
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .order-card {
+      border: 2px solid transparent;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: all 0.4s ease;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .order-card.new {
+      border-color: #ff007f;
+      box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+    }
+
+    .order-card.completed {
+      opacity: 0.7;
+      border-color: gray;
+      background: rgba(100, 100, 100, 0.2);
+      transition: opacity 1s ease;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-info p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #ddd;
+    }
+
+    .complete-btn {
+      background: #ff007f;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .complete-btn:hover {
+      background: #ff3399;
+    }
+
+    .completed-label {
+      color: #bbb;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    .section-title {
+      margin-top: 40px;
+      color: #ff66b2;
+      text-align: center;
+    }
+
+    a.back-link {
+      margin: 40px;
+      color: #ff66b2;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a.back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<h1>🍹 Bestellungen Übersicht <span id="order-count">0</span></h1>
+
+<div class="orders-container">
+
+  <!-- 🆕 Neue Bestellungen -->
+  <h2 class="section-title">Neue Bestellungen</h2>
+  <div th:each="order : ${orders}" th:if="${!order.completed}" class="order-card new">
+    <div class="order-header">
+      <h3 th:text="${order.drinkName}">Drinkname</h3>
+      <form th:action="@{'/admin/orders/complete/' + ${order.id}}" method="post">
+        <button type="submit" class="complete-btn">✅ Erledigt</button>
+      </form>
+    </div>
+    <div class="order-info">
+      <p><strong>Gast:</strong> <span th:text="${order.username}">Gast</span></p>
+      <p><strong>Zutaten:</strong> <span th:text="${order.ingredients}">Zutatenliste</span></p>
+      <p><strong>Zubereitung:</strong> <span th:text="${order.preparation}">Zubereitung</span></p>
+      <p>
+        <strong>Bestellt um:</strong>
+        <span th:text="${order.createdAt} != null ? ${#temporals.format(order.createdAt, 'HH:mm:ss')} : '—'"></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ✅ Erledigte Bestellungen -->
+  <h2 class="section-title">Fertige Bestellungen</h2>
+  <div th:each="order : ${orders}" th:if="${order.completed}"
+       class="order-card completed"
+       th:attr="data-created-at=${order.createdAt} != null ? ${#temporals.format(order.createdAt, 'yyyy-MM-dd''T''HH:mm:ss')} : '1970-01-01T00:00:00'">
+    <div class="order-header">
+      <h3 th:text="${order.drinkName}">Drinkname</h3>
+      <span class="completed-label">✔ Erledigt</span>
+    </div>
+    <div class="order-info">
+      <p><strong>Gast:</strong> <span th:text="${order.username}">Gast</span></p>
+      <p><strong>Zutaten:</strong> <span th:text="${order.ingredients}">Zutatenliste</span></p>
+      <p><strong>Zubereitung:</strong> <span th:text="${order.preparation}">Zubereitung</span></p>
+      <p>
+        <strong>Fertig seit:</strong>
+        <span th:text="${order.createdAt} != null ? ${#temporals.format(order.createdAt, 'HH:mm:ss')} : '—'"></span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<a href="/home" class="back-link">← Zurück zum Menü</a>
+
+<!-- 🔧 Scripts -->
+<script>
+  // 🔔 Badge: offene Bestellungen
+  async function updateOrderCount() {
+    try {
+      const res = await fetch('/admin/orders/count', { credentials: 'same-origin' });
+      const text = await res.text();
+      const count = parseInt(text, 10);
+      const badge = document.getElementById('order-count');
+      if (!isNaN(count) && count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      console.warn('Konnte Bestellungszähler nicht laden.', e);
+    }
+  }
+
+  // ⏳ Erledigte Bestellungen nach 2 Min ausblenden
+  function removeOldCompletedOrders() {
+    const now = new Date();
+    document.querySelectorAll('.order-card.completed').forEach(card => {
+      const iso = card.getAttribute('data-created-at');
+      if (!iso) return;
+      const created = new Date(iso);
+      if (isNaN(created.getTime())) return;
+      const diff = now - created;
+      if (diff > 120000) { // 2 Minuten
+        card.style.opacity = '0';
+        setTimeout(() => card.remove(), 1000);
+      }
+    });
+  }
+
+  // Initial + Intervall
+  updateOrderCount();
+  setInterval(updateOrderCount, 15000);        // alle 15s
+  setInterval(removeOldCompletedOrders, 10000); // alle 10s
+</script>
+
+</body>
+</html>

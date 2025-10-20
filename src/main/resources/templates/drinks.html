@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Getränkeübersicht</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a 0%, #0b0b0b 100%);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin: 40px 0 10px 0;
+      color: #ff007f;
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+
+    .tray-icon {
+      position: fixed;
+      top: 20px;
+      right: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #ff66b2;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 5;
+    }
+    .tray-icon:hover { background: rgba(255, 0, 127, 0.2); }
+
+    .tray-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff007f;
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    .drink-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 80px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .drink-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 0, 127, 0.2);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .drink-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);
+    }
+
+    .drink-image { width: 100%; height: 200px; object-fit: cover; }
+    .drink-info { padding: 15px; text-align: center; }
+    .drink-info h3 { margin: 10px 0 5px 0; color: #fff; }
+    .drink-info p { margin: 0; font-size: 14px; color: #ccc; }
+
+    .ingredients {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff; padding: 20px;
+      box-sizing: border-box;
+      font-size: 14px;
+      border-radius: 20px;
+      overflow-y: auto;
+      z-index: 1;
+    }
+
+    .drink-card:hover .ingredients { display: block; }
+
+    .order-button, .admin-buttons {
+      text-align: center;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .drink-card:hover .order-button,
+    .drink-card:hover .admin-buttons {
+      display: block;
+    }
+
+    .btn-add-to-tray {
+      background: #ff007f;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+      margin-top: 5px;
+    }
+    .btn-add-to-tray:hover { background: #ff3399; }
+
+    /* ✏️🗑️ Admin-Buttons nebeneinander */
+    .admin-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-admin {
+      background: #ff007f;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+      text-decoration: none;
+      box-shadow: 0 0 8px rgba(255, 0, 127, 0.3);
+    }
+
+    .btn-admin:hover {
+      background: #ff3399;
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center; align-items: center;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255,0,127,0.5);
+    }
+    .modal-content button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-continue { background: #ff007f; color: white; }
+    .btn-tray { background: #ff66b2; color: white; }
+  </style>
+</head>
+<body>
+<h1>🍹 Getränkeübersicht</h1>
+
+<!-- 🧉 Tablett-Icon -->
+<div class="tray-icon" onclick="window.location='/orders/tray'">
+  🧉<span id="tray-count" class="tray-count" style="display:none;">0</span>
+</div>
+
+<div class="drink-grid">
+  <div class="drink-card" th:each="drink : ${drinks}">
+    <img th:src="${drink.imagePath}" alt="Drink Bild" class="drink-image">
+    <div class="ingredients">
+
+      <strong>Zutaten:</strong>
+      <ul><li th:each="ingredient : ${drink.ingredients}" th:text="${ingredient.name}"></li></ul>
+
+      <!-- 🧉 Nur für User -->
+      <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="order-button">
+        <button type="button" class="btn-add-to-tray"
+                th:onclick="'addToTray(' + ${drink.id} + ')'">🥤 Aufs Tablett legen</button>
+      </div>
+
+      <!-- ✏️🗑️ Nur für Admin -->
+      <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="admin-buttons">
+        <a th:href="@{'/admin/edit-drink/' + ${drink.id}}" class="btn-admin">✏️</a>
+        <a th:href="@{'/admin/delete-drink/' + ${drink.id}}"
+           class="btn-admin"
+           onclick="return confirm('Willst du diesen Drink wirklich löschen? 🗑️');">🗑️</a>
+      </div>
+
+    </div>
+
+    <div class="drink-info">
+      <h3 th:text="${drink.name}"></h3>
+      <p th:text="${drink.category}"></p>
+    </div>
+  </div>
+</div>
+
+<a href="/home" style="margin:40px;color:#ff66b2;text-decoration:none;font-weight:bold;">← Zurück zur Startseite</a>
+
+<!-- Modal -->
+<div id="popupModal" class="modal">
+  <div class="modal-content">
+    <h3>🥤 Getränk zum Tablett hinzugefügt!</h3>
+    <p>Möchtest du weiter bestellen oder dein Tablett ansehen?</p>
+    <button class="btn-continue" onclick="closeModal()">Weiter bestellen</button>
+    <button class="btn-tray" onclick="goToTray()">Zum Tablett</button>
+  </div>
+</div>
+
+<script>
+  async function addToTray(drinkId) {
+    try {
+      const response = await fetch('/orders/add/' + drinkId, {
+        method: 'POST',
+        credentials: 'same-origin'
+      });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const count = await response.text();
+      const badge = document.getElementById('tray-count');
+      badge.textContent = count;
+      badge.style.display = 'inline';
+      openModal();
+    } catch (e) {
+      console.error(e);
+      alert('Fehler beim Hinzufügen zum Tablett.');
+    }
+  }
+
+  function openModal() {
+    const modal = document.getElementById('popupModal');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('popupModal');
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.display = 'none'; }, 200);
+  }
+
+  function goToTray() {
+    closeModal();
+    setTimeout(() => window.location.href = '/orders/tray', 150);
+  }
+
+  async function updateTrayCount() {
+    try {
+      const res = await fetch('/orders/count', { credentials: 'same-origin' });
+      const count = await res.text();
+      const badge = document.getElementById('tray-count');
+      if (parseInt(count) > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      console.warn('Tray count could not be updated.');
+    }
+  }
+  updateTrayCount();
+</script>
+</body>
+</html>
