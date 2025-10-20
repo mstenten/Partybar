@@ -1,19 +1,20 @@
-# Dockerfile für Partybar (Spring Boot App)
+# Dockerfile für Partybar (Spring Boot ohne mvnw)
 
-# Verwende Java 21 (falls du 17 nutzt, sag’s mir kurz)
-FROM eclipse-temurin:21-jdk
+# Verwende Java 17 mit Maven vorinstalliert
+FROM maven:3.9.6-eclipse-temurin-17
 
-# Arbeitsverzeichnis im Container
+# Arbeitsverzeichnis
 WORKDIR /app
 
-# Alles ins Container-Image kopieren
+# Projektdateien in Container kopieren
 COPY . .
 
-# Mit Maven bauen
-RUN ./mvnw clean package -DskipTests
+# Projekt bauen (Tests überspringen)
+RUN mvn clean package -DskipTests
 
-# Port wie in application.properties
-EXPOSE 9090
+# Render gibt PORT-Variable vor
+ENV PORT=10000
+EXPOSE 10000
 
-# App starten
-CMD ["java", "-jar", "target/partybar-0.0.1-SNAPSHOT.jar"]
+# App starten – Port dynamisch aus Render übernehmen
+CMD sh -c 'JAR=$(ls target/*.jar | head -n 1); java -Dserver.port=${PORT} -jar "$JAR"'
