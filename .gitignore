@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Lokale H2-Datenbank ignorieren
+partydb.mv.db
+partydb.trace.db
