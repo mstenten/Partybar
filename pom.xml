@@ -10,7 +10,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.4</version>
-        <relativePath/> <!-- sucht nicht lokal -->
+        <relativePath/>
     </parent>
 
     <groupId>dev.party</groupId>
@@ -28,44 +28,51 @@
 
     <dependencies>
 
-        <!-- Spring Boot Starter Web -->
+        <!-- 🌐 Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Thymeleaf -->
+        <!-- 🧩 Template Engine -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- JPA + Hibernate -->
+        <!-- 🗄️ JPA / Hibernate -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- H2 Database -->
+        <!-- 🗃️ Lokale H2-Datenbank -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Security -->
+        <!-- 🐘 PostgreSQL (für Render) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- 🔐 Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Extras für Thymeleaf + Security -->
+        <!-- 🔒 Thymeleaf + Security Extras -->
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- DevTools -->
+        <!-- ⚙️ Developer Tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -73,7 +80,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Tests -->
+        <!-- 🧪 Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -83,7 +90,7 @@
     </dependencies>
 
     <build>
-        <!-- 🚫 Keine Filterung für Ressourcen (verhindert MalformedInputException) -->
+        <!-- 🚫 Keine Filterung für Ressourcen -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
