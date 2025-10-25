@@ -62,7 +62,8 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // 💡 Getränkeübersicht: nur eingeloggte Benutzer
-                        .requestMatchers(mvc.pattern("/drinks/**")).hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(mvc.pattern("/drinks/**")).permitAll()
+
 
                         // 💡 Bestellungen (Tray, Add, Submit) → für alle erlaubt
                         .requestMatchers(mvc.pattern("/orders/**")).permitAll()
